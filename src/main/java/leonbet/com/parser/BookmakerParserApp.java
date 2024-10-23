@@ -50,7 +50,6 @@ public class BookmakerParserApp {
 				String sportName = sportJson.getString(NAME);
 				if (SPORTS.contains(sportName)) {
 					Sport sport = new Sport(sportName, new ArrayList<>());
-					sports.add(sport);
 					List<League> leaguesList = new ArrayList<>();
 					JSONArray leagues = sportJson.getJSONArray(REGIONS);
 					for (int j = 0; j < leagues.length(); j++) {
@@ -70,6 +69,7 @@ public class BookmakerParserApp {
 					}
 					Collections.sort(leaguesList);
 					sport.leagues().addAll(leaguesList);
+					sports.add(sport);
 				}
 			}
 		}).get();
