@@ -6,7 +6,7 @@ import java.util.List;
 * Created by Joanna Pakosh, on 10/2024
 */
 
-public record Sport (Long id, String name, List<League> leagues) {	
+public record Sport (String name, List<League> leagues) {	
 
 	@Override
 	public String toString() {
