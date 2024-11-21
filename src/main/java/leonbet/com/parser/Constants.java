@@ -8,7 +8,7 @@ import java.util.Set;
 * Created by Joanna Pakosh, on 10/2024
 */
 
-public class Constants {
+public final class Constants {
 
 	static final String ID = "id";
 	static final String NAME = "name";
