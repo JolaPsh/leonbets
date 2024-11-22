@@ -35,44 +35,36 @@ public class BookmakerParserApp {
 		List<Callable<Sport>> tasks = new ArrayList<>();
 		
 		List<Sport> sports = new ArrayList<>();
-		executorService.submit(() -> {
-			CompletableFuture<String> mainResponse = HttpUtil.getRequestAndResponse(HttpUtil.getMainUrl());
-			String basicResponse = null;
-			try {
-				basicResponse = mainResponse.get();
-			} catch (InterruptedException | ExecutionException e) {
-				e.printStackTrace();
-			}
+		CompletableFuture<String> mainResponse = HttpUtil.getRequestAndResponse(HttpUtil.getMainUrl());
 			
-			JSONArray sportMainList = new JSONArray(basicResponse);
-			for (int i = 0; i < sportMainList.length(); i++) {
-				JSONObject sportJson = sportMainList.getJSONObject(i);
-				String sportName = sportJson.getString(NAME);
-				if (SPORTS.contains(sportName)) {
-					Sport sport = new Sport(sportName, new ArrayList<>());
-					List<League> leaguesList = new ArrayList<>();
-					JSONArray leagues = sportJson.getJSONArray(REGIONS);
-					for (int j = 0; j < leagues.length(); j++) {
-						JSONArray leagueArray = leagues.getJSONObject(j).getJSONArray(LEAGUES);
-						for (int k = 0; k < leagueArray.length(); k++) {
-							JSONObject leagueJson = leagueArray.getJSONObject(k);
-							Integer topOrder = leagueJson.getInt(TOP_ORDER);
-							Boolean isTop = leagueJson.getBoolean(TOP);
-							if (isTop) {
-								Long id = leagueJson.getLong(ID);
-								String name = leagueJson.getString(NAME);
-								String nameDefault = leagues.getJSONObject(j).getString(NAME_DEFAULT);
-								League league = new League(id, name, nameDefault, topOrder, new ArrayList<>());
-								leaguesList.add(league);
-							}
-						}					
-					}
-					Collections.sort(leaguesList);
-					sport.leagues().addAll(leaguesList);
-					sports.add(sport);
+		JSONArray sportMainList = new JSONArray(mainResponse.get());
+		for (int i = 0; i < sportMainList.length(); i++) {
+			JSONObject sportJson = sportMainList.getJSONObject(i);
+			String sportName = sportJson.getString(NAME);
+			if (SPORTS.contains(sportName)) {
+				Sport sport = new Sport(sportName, new ArrayList<>());
+				List<League> leaguesList = new ArrayList<>();
+				JSONArray leagues = sportJson.getJSONArray(REGIONS);
+				for (int j = 0; j < leagues.length(); j++) {
+					JSONArray leagueArray = leagues.getJSONObject(j).getJSONArray(LEAGUES);
+					for (int k = 0; k < leagueArray.length(); k++) {
+						JSONObject leagueJson = leagueArray.getJSONObject(k);
+						Integer topOrder = leagueJson.getInt(TOP_ORDER);
+						Boolean isTop = leagueJson.getBoolean(TOP);
+						if (isTop) {
+							Long id = leagueJson.getLong(ID);
+							String name = leagueJson.getString(NAME);
+							String nameDefault = leagues.getJSONObject(j).getString(NAME_DEFAULT);
+							League league = new League(id, name, nameDefault, topOrder, new ArrayList<>());
+							leaguesList.add(league);
+						}
+					}					
 				}
+				Collections.sort(leaguesList);
+				sport.leagues().addAll(leaguesList);
+				sports.add(sport);
 			}
-		}).get();
+		}
 		
 		for(Sport sport: sports) {
 			AsyncTaskParse asyncTaskParse = new AsyncTaskParse(sport);
